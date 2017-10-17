@@ -5,6 +5,8 @@ setwd("C:\\Users\\594305\\Documents\\GitHub\\Split_Plot_Design\\Ajay Work")
 csvfile <- read.csv("LF21 DOE Encoded.csv") 
 csvfile$day <- 4
 
+runs=100
+sim = 5
 no_manuever <- csvfile[which(csvfile$Ship.Maneuver == 1),]
 yes_manuever <- csvfile[which(csvfile$Ship.Maneuver == -1),]
 
@@ -22,12 +24,12 @@ power_df <- cbind.data.frame(labels, best_calc=rep(0,11))
 best_power <- 0
 
 #Outer Loop iterating the numbers of runs to sample
-for (j in 1:100){
-  no_manuever$day[sample(8)] <- 1
+for (j in 1:sim){
+  no_manuever$day[sample(1:20,8)] <- 1
   design <- rbind(no_manuever, yes_manuever)
   
     #Inner Loop specifying the number of times to test this sample
-    for (i in 1:100){
+    for (i in 1:runs){
       rand_base <- rnorm(2)
       whole_plot_error <- c(rep(rand_base[1],8), rep(rand_base[2],21))
       design$wholeplot_error <- whole_plot_error
@@ -58,8 +60,9 @@ for (j in 1:100){
       coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
       rows <- which(coefs$p.z < 0.2)
       calc[rows] <- calc[rows] + 1
+      
       }
-  calc <- calc/i
+  calc <- calc/runs
   print(j)
   
   test_stat <- min(calc[-1] )#exclude the Intercept
@@ -69,12 +72,18 @@ for (j in 1:100){
     best_power <- test_stat
     best_design <- design
     power_df$best_calc <- calc
+    
   }
-  
-  #calc <- rep(0, 11)
+  print(calc)
+  calc <- rep(0,11)
 }
+coefs$power <- power_df$best_calc
+coefs$sims <- sim
+print()
+print('best_calc')
+print(power_df$best_calc)
 
-#Reinstating value names to encoded identifiers
+coefs#Reinstating value names to encoded identifiers
 best_design[,1] <- sapply(best_design[,1], function(x){
  if(x == 0.5){"Weave"}
  else{"Radial"}
@@ -101,6 +110,6 @@ best_design[,5] <- sapply(best_design[,5], function(x){
  else{"Yes"}
 })
 
-write.csv(best_design, file="RandomEffectsModel_100samples.csv")
-write.csv(coefs, file="Coefficients_100samples.csv")
+write.csv(best_design, file="RandomEffectsModel_samples.csv")
+write.csv(coefs, file="Coefficients_samples.csv")
 
