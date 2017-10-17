@@ -1,12 +1,25 @@
+#Authors: Ajay Mysore & Douglas Brown
+
 library(lme4)
 
-#Must take in an encoded csv, where value names are replaced by (-1,1) or (-1,0,1)
+#CHANGE PATH TO LOCAL DIRECTORY
 setwd("C:\\Users\\594305\\Documents\\GitHub\\Split_Plot_Design\\Ajay Work")
+
+#Must take in an ENCODED design matrix csv, 
+# where value names are replaced by (-1,1) or (-1,0,1)
 csvfile <- read.csv("LF21 DOE Encoded.csv") 
 csvfile$day <- 4
 
+#Number of simulations (sim) refers to the outer loop, 
+# each simulation is a different random sampling
+# of the plot
+sim = 1
+
+#Number of runs refers to the inner loop where a 
+# particular split plot is being tested tht many times
+# Generally left at 100 (By Ray)
 runs=100
-sim = 5
+
 no_manuever <- csvfile[which(csvfile$Ship.Maneuver == 1),]
 yes_manuever <- csvfile[which(csvfile$Ship.Maneuver == -1),]
 
@@ -23,9 +36,9 @@ labels <- c("(Intercept)","Target.Maneuver", "Target.Quantity",
 power_df <- cbind.data.frame(labels, best_calc=rep(0,11))
 best_power <- 0
 
-#Outer Loop iterating the numbers of runs to sample
+#Outer Loop. Can specify how many trials to sample for each simulation
 for (j in 1:sim){
-  no_manuever$day[sample(1:20,8)] <- 1
+  no_manuever$day[sample(1:dim(no_manuever)[1],8)] <- 1
   design <- rbind(no_manuever, yes_manuever)
   
     #Inner Loop specifying the number of times to test this sample
@@ -74,16 +87,18 @@ for (j in 1:sim){
     power_df$best_calc <- calc
     
   }
-  print(calc)
+  #print(calc)
   calc <- rep(0,11)
 }
-coefs$power <- power_df$best_calc
-coefs$sims <- sim
-print()
-print('best_calc')
-print(power_df$best_calc)
 
-coefs#Reinstating value names to encoded identifiers
+#Dataframe to write in CSV
+coefs$Power <- power_df$best_calc
+coefs$RunsPerSim <- runs
+# print(' ')
+# print('best_calc')
+# print(power_df$best_calc)
+
+#Reinstating value names to encoded identifiers
 best_design[,1] <- sapply(best_design[,1], function(x){
  if(x == 0.5){"Weave"}
  else{"Radial"}
@@ -110,6 +125,6 @@ best_design[,5] <- sapply(best_design[,5], function(x){
  else{"Yes"}
 })
 
-write.csv(best_design, file="RandomEffectsModel_samples.csv")
-write.csv(coefs, file="Coefficients_samples.csv")
+write.csv(best_design, file="RandomEffectsModel_1sample.csv")
+write.csv(coefs, file="Coefficients_1sample.csv")
 
