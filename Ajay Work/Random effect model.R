@@ -13,7 +13,7 @@ csvfile$day <- 4
 #Number of simulations (sim) refers to the outer loop, 
 # each simulation is a different random sampling
 # of the plot
-sim = 1
+sim = 10
 
 #Number of runs refers to the inner loop where a 
 # particular split plot is being tested tht many times
@@ -125,6 +125,6 @@ best_design[,5] <- sapply(best_design[,5], function(x){
  else{"Yes"}
 })
 
-write.csv(best_design, file="RandomEffectsModel_1sample.csv")
-write.csv(coefs, file="Coefficients_1sample.csv")
+write.csv(best_design, file="RandomEffectsModel_10sample.csv")
+write.csv(coefs, file="Coefficients_10sample.csv")
 
