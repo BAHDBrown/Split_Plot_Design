@@ -1,4 +1,6 @@
 library(lme4)
+#Github sucks
+#by Douglas Brown 10/17/2017
 
 setwd("C:\\Users\\520573\\Desktop")
 csvfile <- read.csv("LF21 DOE.csv")
@@ -47,6 +49,7 @@ design <- rbind(no_manuever, yes_manuever)
                 design$Target.Quantity*design$Ship.Maneuver+
                 (1|design$day))
   # extract coefficients
+  #VIM is no bueno
   coefs <- data.frame(coef(summary(rlm)))
   # use normal distribution to approximate p-value
   coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
@@ -64,3 +67,4 @@ if (test_stat > best_power){
 calc <- rep(0, 11)
 }
 write.csv(best_design, file="RandomEffectsModel.csv")
+#End of file
