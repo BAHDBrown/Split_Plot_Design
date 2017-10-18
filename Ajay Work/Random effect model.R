@@ -13,7 +13,7 @@ csvfile$day <- 4
 #Number of simulations (sim) refers to the outer loop, 
 # each simulation is a different random sampling
 # of the plot
-sim = 100
+sim = 1000
 
 #Number of runs refers to the inner loop where a 
 # particular split plot is being tested tht many times
@@ -38,7 +38,8 @@ best_power <- 0
 
 #Outer Loop. Can specify how many trials to sample for each simulation
 for (j in 1:sim){
-  no_manuever$day[sample(1:dim(no_manuever)[1],8)] <- 1
+  no_manuever$day <- 2
+  no_manuever$day[sample(1:20, 8)] <- 1
   design <- rbind(no_manuever, yes_manuever)
   
     #Inner Loop specifying the number of times to test this sample
@@ -77,7 +78,6 @@ for (j in 1:sim){
       }
   calc <- calc/runs
   print(j)
-  
   test_stat <- min(calc[-1] )#exclude the Intercept
   
   #Sorting out the best cases
@@ -125,6 +125,6 @@ best_design[,5] <- sapply(best_design[,5], function(x){
  else{"Yes"}
 })
 
-write.csv(best_design, file="RandomEffectsModel_100samples.csv")
-write.csv(coefs, file="Coefficients_100samples.csv")
+write.csv(best_design, file="RandomEffectsModel_1000samples.csv")
+write.csv(coefs, file="Coefficients_1000samples.csv")
 
